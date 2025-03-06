@@ -3,13 +3,15 @@ list-exchanges:
 	docker compose run --rm freqtrade list-exchanges
 
 list-timeframes:
-	docker compose run --rm freqtrade list-timeframes -c user_data/exchange-binance.json
+	docker compose run --rm freqtrade list-timeframes -c user_data/exchange-kraken.json
 
 list-markets:
-	docker compose run --rm freqtrade list-markets -c user_data/exchange-binance.json --print-json
+	docker compose run --rm freqtrade list-markets -c user_data/exchange-kraken.json --print-json
 
 data:
-	docker compose run --rm freqtrade download-data --timeframe 1m 3m 5m -c user_data/exchange-binance.json --timerange 20221201-20231001
+	docker compose run --rm freqtrade download-data --timeframe 1m 3m 5m -c user_data/exchange-kraken.json --timerange 20221201-20231001 --dl-trades
+  freqtrade convert-trade-data --exchange kraken --format-from kraken_csv --format-to feather 
+  freqtrade trades-to-ohlcv -c  user_data/exchange-kraken.json --exchange kraken -t 1m 5m 15m 
 
 clean:
 	rm -rf user_data/models/*
@@ -19,25 +21,25 @@ NOW=$(shell date +%Y%m%d%H%M)
 #TIMEFRAME=15m
 #TIMEFRAME=5m
 TIMEFRAME=1m
-TIMERANGE=20230801-20230901
+TIMERANGE=20240101-20230301
 #TIMEFRAMEDETAIL=--timeframe-detail 1m
 TIMEFRAMEDETAIL=
 CURRENCY=
 
 backtesting:
-	docker compose run --rm freqtrade backtesting --strategy-list ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json  --timerange $(TIMERANGE) --breakdown day week month > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
+	docker compose run --rm freqtrade backtesting --strategy-list ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config-static.json -c user_data/exchange-kraken.json  --timerange $(TIMERANGE) --breakdown day week month > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
 
 plot:
-	docker compose run --rm freqtrade plot-dataframe --strategy ichiV1 --timeframe $(TIMEFRAME) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json --timerange $(TIMERANGE) 
+	docker compose run --rm freqtrade plot-dataframe --strategy ichiV1 --timeframe $(TIMEFRAME) -c user_data/config-static.json -c user_data/exchange-kraken.json --timerange $(TIMERANGE) 
 
 plot-profit:
-	docker compose run --rm freqtrade plot-profit --strategy ichiV1 --timeframe $(TIMEFRAME) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json --timerange $(TIMERANGE) 
+	docker compose run --rm freqtrade plot-profit --strategy ichiV1 --timeframe $(TIMEFRAME) -c user_data/config-static.json -c user_data/exchange-kraken.json --timerange $(TIMERANGE) 
 
 lookahead-analysis:
-	docker compose run --rm freqtrade lookahead-analysis --strategy-list ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json  --timerange $(TIMERANGE) --breakdown day week month > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
+	docker compose run --rm freqtrade lookahead-analysis --strategy-list ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config-static.json -c user_data/exchange-kraken.json  --timerange $(TIMERANGE) --breakdown day week month > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
 
 recursive-analysis:
-	docker compose run --rm freqtrade recursive-analysis -p BTC/USDT --strategy ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json  --timerange $(TIMERANGE)  > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
+	docker compose run --rm freqtrade recursive-analysis -p BTC/USDT --strategy ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config-static.json -c user_data/exchange-kraken.json  --timerange $(TIMERANGE)  > $(TIMERANGE)-$(TIMEFRAME)-results.txt && cat $(TIMERANGE)-$(TIMEFRAME)-results.txt 
 
 
 generate-results: backtesting plot plot-profit
@@ -90,7 +92,7 @@ generate-results-sol-5m: generate-results-sol
 
 hyperopt:
 # non deve usare lo stesso timerange del backtest (al massimo si deve sovrapporre)
-	docker compose run --rm freqtrade hyperopt --hyperopt-loss SortinoHyperOptLoss --job-workers -2 -e 500 --spaces buy sell roi stoploss --strategy ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json  --timerange $(TIMERANGE)  > hyper-README.txt && cat hyper-README.txt
+	docker compose run --rm freqtrade hyperopt --hyperopt-loss SortinoHyperOptLoss --job-workers -2 -e 500 --spaces buy sell roi stoploss --strategy ichiV1 --timeframe $(TIMEFRAME) $(TIMEFRAMEDETAIL) -c user_data/config-static.json -c user_data/exchange-kraken.json  --timerange $(TIMERANGE)  > hyper-README.txt && cat hyper-README.txt
 
 hyperopt-20230301-20230801: TIMERANGE=20230301-20230801
 hyperopt-20230301-20230801: hyperopt
@@ -102,4 +104,4 @@ hyperopt-list:
 ## Dry run
 
 dry-run:
-	docker compose run --rm freqtrade trade --strategy ichiV1 -c user_data/config.json -c user_data/exchange-binance$(CURRENCY).json
+	docker compose run --rm freqtrade trade --strategy ichiV1 -c user_data/config.json -c user_data/exchange-kraken.json
