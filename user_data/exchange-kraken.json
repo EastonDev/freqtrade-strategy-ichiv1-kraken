@@ -1,0 +1,16 @@
+{
+    "exchange": {
+        "name": "kraken",
+        "ccxt_config": {"enableRateLimit": true},
+        "ccxt_async_config": {
+            "enableRateLimit": true,
+            "rateLimit": 1200
+        },
+        "pair_whitelist": [
+            "SOL/USDT"
+            ],
+        "pair_blacklist": [
+            "BNB/.*"
+        ]
+    }
+}
