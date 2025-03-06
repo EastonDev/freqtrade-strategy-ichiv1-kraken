@@ -18,7 +18,7 @@ services:
     # Please read the https://www.freqtrade.io/en/stable/rest-api/ documentation
     # before enabling this.
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8888:8888"
     # Default command used when running `docker compose up`
     command: >
       trade
@@ -51,7 +51,7 @@ services:
     # Please read the https://www.freqtrade.io/en/stable/rest-api/ documentation
     # before enabling this.
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8888:8888"
     # Default command used when running `docker compose up`
     command: >
       trade
