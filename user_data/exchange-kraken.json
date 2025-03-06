@@ -6,6 +6,9 @@
             "enableRateLimit": true,
             "rateLimit": 1200
         },
+        "key": "/",
+        "secret": "/==",
+        "enable_ws": true,
         "pair_whitelist": [
     "BTC/USD",
     "XRP/USD",
