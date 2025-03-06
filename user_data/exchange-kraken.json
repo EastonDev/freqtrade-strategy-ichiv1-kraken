@@ -48,7 +48,7 @@
     "XMR/USD",
     "FWOG/USD",
     "BTC/USDT",
-    "BOND/USD
+    "BOND/USD"
             ],
         "pair_blacklist": [
             "BNB/.*"
