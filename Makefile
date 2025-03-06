@@ -9,9 +9,9 @@ list-markets:
 	docker compose run --rm freqtrade list-markets -c user_data/exchange-kraken.json --print-json
 
 data: 
-	docker compose run --rm freqtrade download-data --timeframe 1m 3m 5m -c user_data/exchange-kraken.json --timerange 20221201-20231001 --dl-trades 
+	docker compose run --rm freqtrade download-data --timeframe 1m 5m 15m -c user_data/exchange-kraken.json --timerange 20221201-20231001 --dl-trades 
 	docker compose run --rm freqtrade convert-trade-data --exchange kraken --format-from kraken_csv --format-to feather 
-	docker compose run --rm freqtrade trades-to-ohlcv -c  user_data/exchange-kraken.json --exchange kraken -t 1m 3m 5m 15m 
+	docker compose run --rm freqtrade trades-to-ohlcv -c  user_data/exchange-kraken.json --exchange kraken -t 1m 5m 15m 
 
 clean:
 	rm -rf user_data/models/*
@@ -56,9 +56,9 @@ generate-results-5m: TIMEFRAME=5m
 generate-results-5m: TIMEFRAMEDETAIL=--timeframe-detail 1m
 generate-results-5m: generate-results
 
-generate-results-3m: TIMEFRAME=3m
-generate-results-3m: TIMEFRAMEDETAIL=--timeframe-detail 1m
-generate-results-3m: generate-results
+generate-results-15m: TIMEFRAME=3m
+generate-results-15m: TIMEFRAMEDETAIL=--timeframe-detail 1m
+generate-results-15m: generate-results
 
 ## All Only
 
